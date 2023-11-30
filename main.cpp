@@ -5,8 +5,8 @@
  * See http://opensource.org/licenses/MIT
  */
 
-#include <libsoundio/soundio/soundio.h>
-
+#include <soundio/soundio.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -106,6 +106,7 @@ static void underflow_callback(struct SoundIoOutStream *outstream) {
 }
 
 int main(int argc, char **argv) {
+    std::cout << "let's a go" << std::endl;
     char *exe = argv[0];
     enum SoundIoBackend backend = SoundIoBackendNone;
     char *device_id = NULL;
