@@ -10,7 +10,10 @@ add_subdirectory(lib/external/elements)
 #message("CMAKE_INSTALL_BINDIR: " ${CMAKE_INSTALL_BINDIR})
 
 
-add_executable(${CMAKE_PROJECT_NAME} main.cpp)
+add_executable(${CMAKE_PROJECT_NAME} main.cpp
+        lib/include/CynthView.h
+        lib/include/Cynthesizer.h
+        lib/src/Cynthesizer.cpp)
 
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
@@ -27,5 +30,9 @@ target_link_libraries(${CMAKE_PROJECT_NAME} elements)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE lib/external/libsoundio/soundio)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE lib/external/elements/lib/include)
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE lib/include)
+
+#include(${CMAKE_SOURCE_DIR}/lib/external/elements/cmake/AppIcon.cmake)
+#include(${CMAKE_SOURCE_DIR}/lib/external/elements/cmake/ElementsConfigApp.cmake)
 
 
