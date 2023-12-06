@@ -5,7 +5,7 @@ Developer Name: Oreste Olimpo
 ## Overview
 
 A C++ Synthesizer. It is a piano with some sound controls. I used the 
-[elements](https://github.com/cycfi/elements]) library to create my GUI, and the 
+[elements](https://github.com/cycfi/elements) library to create my GUI, and the 
 [Tonic](https://github.com/TonicAudio/Tonic) library for audio synthesis. I also had to include
 [RtAudio](https://github.com/thestk/rtaudio) for real-time audio output.
 
