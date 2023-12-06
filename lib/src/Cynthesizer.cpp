@@ -1,119 +1,62 @@
 #include "Cynthesizer.h"
-#include <elements.hpp>
-#include <utility>
 
-using namespace cycfi::elements;
+// TODO delete
+int silly_counter = 0;
 
-float base_x = 20;
-float base_y = 20;
-float win_width = 1120;
-float win_height = 800;
+bool key_depressed = false;
 
-auto constexpr bkd_color = rgba(35, 35, 37, 255);
-auto background = box(bkd_color);
-
-using dial_ptr = std::shared_ptr<dial_base>;
-dial_ptr dials[4];
-
-//auto blue_rbox =
-//        align_center_middle(
-//                fixed_size(
-//                        {100, 50},
-//                        rbox(colors::medium_blue, 10)
-//                )
-//        );
-
-
-auto btn_rbox(color c) {
-    return
+auto Cynthesizer::make_piano_key(Note n, color c) {
+//    auto sk = shortcut_key{key_code::z};
+    auto p_key = share(layered_button(
             left_margin(
                     7,
                     rbox(c, 10)
-            );
-
-//            fixed_size(
-//                    {50, 200},
-//                    rbox(c, 10)
-//            );
-}
-
-// TODO make piano keys
-//auto make_htile_aligns()
-//{
-//    auto _box = left_margin(
-//            { 10 },
-//            vsize(150, rbox_)
-//    );
-//
-//    return margin(
-//            { 0, 50, 10, 10 },
-//            htile(
-//                    valign(0.0, _box),
-//                    valign(0.2, _box),
-//                    valign(0.4, _box),
-//                    valign(0.6, _box),
-//                    valign(0.8, _box),
-//                    valign(1.0, _box)
-//            )
-//    );
-//}
-
-auto make_white_key() {
-
-    return layered_button(
-            btn_rbox(colors::ivory),            // Normal state
-            btn_rbox(colors::ivory.level(0.8))  // Pushed state
+            ),
+            left_margin(
+                    7,
+                    rbox(c.level(0.8), 10)
+            ))
     );
+    piano_keys[p_key] = n;
+    return hold(p_key);
 }
 
-auto make_black_key() {
-    return layered_button(
-            btn_rbox(colors::black),
-//            btn_rbox(colors::black),
-            btn_rbox(colors::green.level(0.8))
-    );
-}
-
-auto make_piano() {
-//    return vsize(
-//            180,
-    return
-            layer(
-                    vsize(
-                            125,
-                            htile(
-                                    hspacer(95),
-                                    make_black_key(),
-                                    hspacer(50),
-                                    make_black_key(),
-                                    hspacer(190),
-                                    make_black_key(),
-                                    hspacer(50),
-                                    make_black_key(),
-                                    hspacer(50),
-                                    make_black_key(),
-                                    hspacer(235)
-                            )
-                    ),
+auto Cynthesizer::make_piano() {
+    return layer(
+            vsize(
+                    125,
                     htile(
-                            make_white_key(),
-                            make_white_key(),
-                            make_white_key(),
-                            make_white_key(),
-                            make_white_key(),
-                            make_white_key(),
-                            make_white_key(),
-                            make_white_key()
+                            hspacer(95),
+                            make_piano_key(Note::CS, colors::dark_slate_gray),
+                            hspacer(50),
+                            make_piano_key(Note::DS, colors::dark_slate_gray),
+                            hspacer(190),
+                            make_piano_key(Note::FS, colors::dark_slate_gray),
+                            hspacer(50),
+                            make_piano_key(Note::GS, colors::dark_slate_gray),
+                            hspacer(50),
+                            make_piano_key(Note::AS, colors::dark_slate_gray),
+                            hspacer(235)
                     )
-//            )
-            );
+            ),
+            htile(
+                    make_piano_key(Note::C_lo, colors::ivory),
+                    make_piano_key(Note::D, colors::ivory),
+                    make_piano_key(Note::E, colors::ivory),
+                    make_piano_key(Note::F, colors::ivory),
+                    make_piano_key(Note::G, colors::ivory),
+                    make_piano_key(Note::A, colors::ivory),
+                    make_piano_key(Note::B, colors::ivory),
+                    make_piano_key(Note::C_hi, colors::ivory)
+            )
+    );
 }
 
-auto make_dial(int index, std::string my_label) {
+auto Cynthesizer::make_dial(int index, std::string my_label, int starting_lvl) {
     dials[index] = share(
             dial(
                     radial_marks<20>(basic_knob<100>()),
-                    (index + 1) * 0.25
+                    starting_lvl
             )
     );
 
@@ -124,16 +67,12 @@ auto make_dial(int index, std::string my_label) {
                     0.7,                                   // Label font size (relative size)
                     "0", "1", "2", "3", "4",               // Labels
                     "5", "6", "7", "8", "9", "10"
-
             )
-
     );
-
     return align_center_middle(markers);
 }
 
-auto make_controls_upper(view &view_) {
-//    return rbox(colors::indian_red, 10);
+auto Cynthesizer::make_radio_buttons() {
     auto sine_wave = radio_button("Sine wave");
     auto square_wave = radio_button("Square wave");
     auto sawtooth_wave = radio_button("Sawtooth wave");
@@ -141,33 +80,35 @@ auto make_controls_upper(view &view_) {
 
     sine_wave.select(true);
 
-    auto radio_buttons =
-            group("Waveform",
-                  margin({10, 10, 20, 20},
-                         top_margin(25,
-                                    vtile(
-                                            top_margin(10, align_left(sine_wave)),
-                                            top_margin(10, align_left(square_wave)),
-                                            top_margin(10, align_left(sawtooth_wave)),
-                                            top_margin(10, align_left(triangle_wave))
-                                    )
-                         )
-                  )
-            );
+    radio_buttons[0] = share(sine_wave);
+    radio_buttons[1] = share(square_wave);
+    radio_buttons[2] = share(sawtooth_wave);
+    radio_buttons[3] = share(triangle_wave);
 
-    return hgrid(
-            radio_buttons,
-//            rbox(colors::indian_red, 10)
-            make_dial(0, "Attack"),
-            make_dial(1, "Decay")
+    return group("Waveform",
+                 margin({10, 10, 20, 20},
+                        top_margin(25,
+                                   vtile(
+                                           top_margin(10, align_left(hold(radio_buttons[0]))),
+                                           top_margin(10, align_left(hold(radio_buttons[1]))),
+                                           top_margin(10, align_left(hold(radio_buttons[2]))),
+                                           top_margin(10, align_left(hold(radio_buttons[3])))
+                                   )
+                        )
+                 )
     );
-
-
 }
 
-template<bool is_vertical>
-auto make_markers() {
-    auto track = basic_track<5, is_vertical>();
+auto Cynthesizer::make_controls_upper(view &view_) {
+    return hgrid(
+            make_radio_buttons(),
+            make_dial(0, "Attack", 0),
+            make_dial(1, "Decay", 0)
+    );
+}
+
+auto Cynthesizer::make_markers() {
+    auto track = basic_track<5, false>();
     return slider_labels<10>(
             slider_marks<40>(track),         // Track with marks
             0.8,                             // Label font size (relative size)
@@ -176,30 +117,92 @@ auto make_markers() {
     );
 }
 
-auto make_controls_lower(view &view_) {
-    auto vibrato = vgrid(
+auto Cynthesizer::make_slider() {
+    auto temp_slider = slider(
+            basic_thumb<25>(),
+            make_markers(),
+            0
+    );
+    vib_slider = share(temp_slider);
+    return vgrid(label("Vibrato"), hold(vib_slider));
+}
 
-            label("Vibrato"),
-            slider(
-                    basic_thumb<25>(),
-                    make_markers<false>(),
-                    0
-            )
-    );
+auto Cynthesizer::make_controls_lower(view &view_) {
     return hgrid(
-            align_middle(hmargin({20, 20}, vibrato)),
-            make_dial(2, "Sustain"),
-            make_dial(3, "Release")
+            align_middle(hmargin({20, 20}, make_slider())),
+            make_dial(2, "Sustain", 1),
+            make_dial(3, "Release", 0)
     );
-//    return rbox(colors::goldenrod, 10);
+}
+
+void Cynthesizer::set_controls(view &view_) {
+    dials[0]->on_change =
+            [this](float val) {
+                sound_out.setAttack(val);
+                std::cout << val << std::endl;
+            };
+    dials[1]->on_change =
+            [this](float val) {
+                sound_out.setDecay(val);
+            };
+    dials[2]->on_change =
+            [this](float val) {
+                sound_out.setSustain(val);
+            };
+    dials[3]->on_change =
+            [this](float val) {
+                sound_out.setRelease(val);
+            };
+
+    radio_buttons[0]->on_click =
+            [this](bool sine) {
+                if (sine) sound_out.setWave(0);
+                std::cout << "sine! " << sine << std::endl;
+            };
+    radio_buttons[1]->on_click =
+            [this](bool square) {
+                if (square) sound_out.setWave(1);
+                std::cout << "square!" << square << std::endl;
+            };
+    radio_buttons[2]->on_click =
+            [this](bool sawtooth) {
+                if (sawtooth) sound_out.setWave(2);
+                std::cout << "sawtooth!" << sawtooth << std::endl;
+            };
+    radio_buttons[3]->on_click =
+            [this](bool triangle) {
+                if (triangle) sound_out.setWave(3);
+                std::cout << "triangle!" << triangle << std::endl;
+            };
+
+    vib_slider->on_change =
+            [this](float val) {
+                sound_out.setVibrato(val);
+                std::cout << val << std::endl;
+            };
+
+
+    for (const auto& p: piano_keys) {
+        p.first->on_click =
+                [p, this](bool pressed) {
+                    key_depressed = !key_depressed;
+                    if (key_depressed) {
+                        sound_out.playNote(p.second);
+                    }
+                    else sound_out.stopNote();
+//                    std::cout << silly_counter << ": p_key pressed! ";
+//                    if (key_depressed) std::cout << "true";
+//                    else std::cout << "false";
+//                    std::cout << std::endl;
+//                    ++silly_counter;
+                };
+    }
 }
 
 int Cynthesizer::run(int argc, char *argv[]) {
 
     rect const &bounds = rect{base_x, base_y,
                               base_x + win_width, base_y + win_height};
-//    float win_width = 100;
-//    float win_height = 100;
     app _app(argc, argv, "Cynthesizer", "com.id");
     window _win(
             _app.name(),
@@ -211,17 +214,37 @@ int Cynthesizer::run(int argc, char *argv[]) {
 
     view_.content(
             vgrid(
-//                    vsize(
-//                            12,
                     make_controls_upper(view_),
                     make_controls_lower(view_),
-//                            ),
                     make_piano()
             ),
-//    align_center_bottom(make_screen()),
             background
     );
+
+    set_controls(view_);
+
+//    key_info* kkey = nullptr;
+//    view_.key(*kkey);
 
     _app.run();
     return 0;
 }
+
+//double Cynthesizer::getAttack() {
+//    return attack;
+//}
+//double Cynthesizer::getDecay() {
+//    return decay;
+//}
+//double Cynthesizer::getSustain() {
+//    return sustain;
+//}
+//double Cynthesizer::getRelease() {
+//    return release;
+//}
+//double Cynthesizer::getVibrato() {
+//    return vibrato;
+//}
+//int Cynthesizer::getWave() {
+//    return wave;
+//}

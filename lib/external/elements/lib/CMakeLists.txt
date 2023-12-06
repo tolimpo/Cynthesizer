@@ -331,5 +331,5 @@ endif()
 add_library(cycfi::elements ALIAS elements)
 add_custom_command(TARGET elements
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy libelements.dll ${CMAKE_CURRENT_BINARY_DIR}/../../../..
+        COMMAND ${CMAKE_COMMAND} -E copy libelementsd.dll ${CMAKE_CURRENT_BINARY_DIR}/../../../..
 )

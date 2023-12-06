@@ -136,6 +136,14 @@ namespace cycfi { namespace elements
       if (btn.down)
       {
          on_tracking(ctx, begin_tracking);
+         //////////////////////////////////////////////////////
+         // Trey's addition: layered_buttons are activated not
+         // just when released, but when depressed as well.
+         // I did not want to figure out how to make a custom
+         // button. This is band-aid solution.
+         if (on_click)
+              on_click(true);
+         //////////////////////////////////////////////////////
       }
       else
       {

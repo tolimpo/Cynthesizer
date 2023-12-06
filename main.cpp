@@ -440,5 +440,6 @@
 #include "Cynthesizer.h"
 
 int main(int argc, char* argv[]) {
-    return Cynthesizer::run(argc, argv);
+    Cynthesizer synth;
+    return synth.run(argc, argv);
 }
