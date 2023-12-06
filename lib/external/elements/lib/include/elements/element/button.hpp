@@ -41,6 +41,12 @@ namespace cycfi { namespace elements
       using button_function = std::function<void(bool)>;
 
       button_function   on_click;
+      //////////////////////////////////////////////////////
+      // Trey's addition: layered button can be activated by key
+      using key_function = std::function<void(key_info)>;
+
+      key_function      on_key;
+      //////////////////////////////////////////////////////
    };
 
    class basic_button
@@ -102,6 +108,10 @@ namespace cycfi { namespace elements
       bool              wants_control() const override;
       element*          hit_test(context const& ctx, point p) override;
       bool              click(context const& ctx, mouse_button btn) override;
+      //////////////////////////////////////////////////////
+      // Trey's addition: layered button can be activated by key
+      bool              key(context const& ctx, key_info k) override;
+      //////////////////////////////////////////////////////
       void              drag(context const& ctx, mouse_button btn) override;
 
       void              value(bool new_state) override;

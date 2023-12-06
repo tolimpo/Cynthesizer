@@ -2,6 +2,22 @@
 
 bool key_depressed = false;
 
+Cynthesizer::Cynthesizer() {
+    keyboard_to_note[key_code::z] = Note::C_lo;
+    keyboard_to_note[key_code::s] = Note::CS;
+    keyboard_to_note[key_code::x] = Note::D;
+    keyboard_to_note[key_code::d] = Note::DS;
+    keyboard_to_note[key_code::c] = Note::E;
+    keyboard_to_note[key_code::v] = Note::F;
+    keyboard_to_note[key_code::g] = Note::FS;
+    keyboard_to_note[key_code::b] = Note::G;
+    keyboard_to_note[key_code::h] = Note::GS;
+    keyboard_to_note[key_code::n] = Note::A;
+    keyboard_to_note[key_code::j] = Note::AS;
+    keyboard_to_note[key_code::m] = Note::B;
+    keyboard_to_note[key_code::comma] = Note::C_hi;
+}
+
 auto Cynthesizer::make_piano_key(Note n, color c) {
     auto p_key = share(layered_button(
             left_margin(
@@ -13,7 +29,7 @@ auto Cynthesizer::make_piano_key(Note n, color c) {
                     rbox(c.level(0.8), 10)
             ))
     );
-    piano_keys[p_key] = n;
+    note_to_piano_key[n] = p_key;
     return hold(p_key);
 
 }
@@ -136,7 +152,6 @@ void Cynthesizer::set_controls(view &view_) {
     dials[0]->on_change =
             [this](float val) {
                 sound_out.setAttack(val);
-                std::cout << val << std::endl;
             };
     dials[1]->on_change =
             [this](float val) {
@@ -154,39 +169,47 @@ void Cynthesizer::set_controls(view &view_) {
     radio_buttons[0]->on_click =
             [this](bool sine) {
                 if (sine) sound_out.setWave(0);
-                std::cout << "sine! " << sine << std::endl;
             };
     radio_buttons[1]->on_click =
             [this](bool square) {
                 if (square) sound_out.setWave(1);
-                std::cout << "square!" << square << std::endl;
             };
     radio_buttons[2]->on_click =
             [this](bool sawtooth) {
                 if (sawtooth) sound_out.setWave(2);
-                std::cout << "sawtooth!" << sawtooth << std::endl;
             };
     radio_buttons[3]->on_click =
             [this](bool triangle) {
                 if (triangle) sound_out.setWave(3);
-                std::cout << "triangle!" << triangle << std::endl;
             };
 
     vib_slider->on_change =
             [this](float val) {
                 sound_out.setVibrato(val);
-                std::cout << val << std::endl;
             };
 
 
-    for (const auto& p: piano_keys) {
-        p.first->on_click =
+    for (const auto& p: note_to_piano_key) {
+        p.second->on_click =
                 [p, this](bool pressed) {
                     key_depressed = !key_depressed;
                     if (key_depressed) {
-                        sound_out.playNote(p.second);
+                        sound_out.playNote(p.first);
                     }
                     else sound_out.stopNote();
+                };
+        p.second->on_key =
+                [p, this](key_info k) {
+                    auto& p_key = note_to_piano_key[keyboard_to_note[k.key]];
+                    // commented out portion is part of attempt at visually pressing
+                    // the buttonlly pressed just like regular mouse clicking
+//                    if (k.action == key_action::press) {
+//                        p_key->value(true);
+//                    }
+//                    else if (k.action == key_action::release) {
+//                        p_key->value(false);
+//                    }
+                    p_key->on_click(true);
                 };
     }
 }

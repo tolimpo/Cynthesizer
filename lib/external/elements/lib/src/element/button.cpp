@@ -157,6 +157,20 @@ namespace cycfi { namespace elements
       return true;
    }
 
+   //////////////////////////////////////////////////////
+   // Trey's addition: layered button can be activated by key
+   bool layered_button::key(context const& /* ctx */, key_info k) {
+       if (k.action == key_action::press || k.action == key_action::release) {
+           if (on_key)
+               on_key(k);
+       }
+       // commented out portion is part of attempt at visually pressing
+       // the buttonlly pressed just like regular mouse clicking
+//       ctx.view.refresh(ctx);
+       return true;
+   }
+   //////////////////////////////////////////////////////
+
    void layered_button::drag(context const& ctx, mouse_button btn)
    {
       if (state(ctx.bounds.includes(btn.pos)))

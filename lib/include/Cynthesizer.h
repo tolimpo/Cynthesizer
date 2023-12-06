@@ -9,8 +9,8 @@ using namespace cycfi::elements;
 using dial_ptr = std::shared_ptr<dial_base>;
 using radio_button_ptr = std::shared_ptr<basic_button>;
 using slider_ptr = std::shared_ptr<basic_slider_base>;
-using piano_map = std::unordered_map<std::shared_ptr<layered_button>, Note>;
-
+using piano_map = std::unordered_map<Note, std::shared_ptr<layered_button>>;
+using key_map = std::unordered_map<key_code, Note>;
 
 class Cynthesizer {
 
@@ -25,7 +25,9 @@ private:
     dial_ptr dials[4];
     radio_button_ptr radio_buttons[4];
     slider_ptr vib_slider;
-    piano_map piano_keys;
+    piano_map note_to_piano_key;
+    key_map keyboard_to_note;
+
 
     SoundOutput sound_out;
 
@@ -41,7 +43,7 @@ private:
     void set_controls(view& view_);
 
 public:
-    Cynthesizer() = default;
+    Cynthesizer();
     int run(int argc, char *argv[]);
 };
 
