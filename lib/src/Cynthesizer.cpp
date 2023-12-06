@@ -1,12 +1,8 @@
 #include "Cynthesizer.h"
 
-// TODO delete
-int silly_counter = 0;
-
 bool key_depressed = false;
 
 auto Cynthesizer::make_piano_key(Note n, color c) {
-//    auto sk = shortcut_key{key_code::z};
     auto p_key = share(layered_button(
             left_margin(
                     7,
@@ -19,6 +15,7 @@ auto Cynthesizer::make_piano_key(Note n, color c) {
     );
     piano_keys[p_key] = n;
     return hold(p_key);
+
 }
 
 auto Cynthesizer::make_piano() {
@@ -190,11 +187,6 @@ void Cynthesizer::set_controls(view &view_) {
                         sound_out.playNote(p.second);
                     }
                     else sound_out.stopNote();
-//                    std::cout << silly_counter << ": p_key pressed! ";
-//                    if (key_depressed) std::cout << "true";
-//                    else std::cout << "false";
-//                    std::cout << std::endl;
-//                    ++silly_counter;
                 };
     }
 }
@@ -223,28 +215,6 @@ int Cynthesizer::run(int argc, char *argv[]) {
 
     set_controls(view_);
 
-//    key_info* kkey = nullptr;
-//    view_.key(*kkey);
-
     _app.run();
     return 0;
 }
-
-//double Cynthesizer::getAttack() {
-//    return attack;
-//}
-//double Cynthesizer::getDecay() {
-//    return decay;
-//}
-//double Cynthesizer::getSustain() {
-//    return sustain;
-//}
-//double Cynthesizer::getRelease() {
-//    return release;
-//}
-//double Cynthesizer::getVibrato() {
-//    return vibrato;
-//}
-//int Cynthesizer::getWave() {
-//    return wave;
-//}

@@ -10,7 +10,6 @@ enum class Note {
 
 class SoundOutput {
 private:
-//    Note current_note;
     std::unordered_map<Note, float> note_pitch;
     float attack;
     float decay;

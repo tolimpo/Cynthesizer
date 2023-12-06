@@ -11,6 +11,7 @@ using radio_button_ptr = std::shared_ptr<basic_button>;
 using slider_ptr = std::shared_ptr<basic_slider_base>;
 using piano_map = std::unordered_map<std::shared_ptr<layered_button>, Note>;
 
+
 class Cynthesizer {
 
 private:
@@ -25,13 +26,6 @@ private:
     radio_button_ptr radio_buttons[4];
     slider_ptr vib_slider;
     piano_map piano_keys;
-
-//    double attack;
-//    double decay;
-//    double sustain;
-//    double release;
-//    double vibrato;
-//    int wave;
 
     SoundOutput sound_out;
 
@@ -49,13 +43,6 @@ private:
 public:
     Cynthesizer() = default;
     int run(int argc, char *argv[]);
-//    double getAttack();
-//    double getDecay();
-//    double getSustain();
-//    double getRelease();
-//    double getVibrato();
-//    int getWave();
-
 };
 
 #endif //CYNTHESIZER_CYNTHESIZER_H
